@@ -1,0 +1,45 @@
+{
+  "name": "backend",
+  "version": "0.0.1",
+  "main": "index.js",
+  "repository": "git@bitbucket.org:lonewolfcorp/backend.git",
+  "author": "Guilherme Souza <guicsou@lonewolfcorp.com>",
+  "license": "MIT",
+  "scripts": {
+    "dev": "nodemon 'src/index.ts' --exec 'ts-node' src/index.ts -e ts,graphql",
+    "test": "jest"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{js,ts,tsx}": [
+      "npx prettier --write",
+      "eslint --fix"
+    ]
+  },
+  "devDependencies": {
+    "@types/node": "^10.12.18",
+    "@types/jest": "^26.0.19",
+    "jest": "^26.6.3",
+    "eslint": "^7.16.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-config-prettier": "^7.1.0",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-prettier": "^3.3.0",
+    "husky": "^4.3.6",
+    "lint-staged": "^10.5.3",
+    "nodemon": "^2.0.6",
+    "prettier": "^2.2.1",
+    "ts-node": "^9.1.1",
+    "typescript": "^3.2.2"
+  },
+  "dependencies": {
+    "graphql-yoga": "^1.16.7",
+    "reflect-metadata": "^0.1.12", 
+    "ts-jest": "^26.4.4",
+    "type-graphql": "^0.15.0"
+  }
+}
