@@ -7,6 +7,7 @@ import java.util.Scanner;
 import core.Message;
 import core.MessageImpl;
 import core.Server;
+import core.client.BrokerStatusListener;
 import core.client.Client;
 
 public class PubSubClient {
@@ -37,12 +38,12 @@ public class PubSubClient {
 		msgBroker.setBrokerId(brokerPort);
 		msgBroker.setType("sub");
 		msgBroker.setContent(clientAddress+":"+clientPort);
-		Client subscriber = new Client(brokerAddress, brokerPort);
+		Client subscriber = new Client(brokerAddress, brokerPort, null);
 		Message response = subscriber.sendReceive(msgBroker);
 		if(response.getType().equals("backup")){			
 			brokerAddress = response.getContent().split(":")[0];
 			brokerPort = Integer.parseInt(response.getContent().split(":")[1]);
-			subscriber = new Client(brokerAddress, brokerPort);
+			subscriber = new Client(brokerAddress, brokerPort, null);
 			subscriber.sendReceive(msgBroker);
 		}
 	}
@@ -53,30 +54,30 @@ public class PubSubClient {
 		msgBroker.setBrokerId(brokerPort);
 		msgBroker.setType("unsub");
 		msgBroker.setContent(clientAddress+":"+clientPort);
-		Client subscriber = new Client(brokerAddress, brokerPort);
+		Client subscriber = new Client(brokerAddress, brokerPort, null);
 		Message response = subscriber.sendReceive(msgBroker);
 		
 		if(response.getType().equals("backup")){			
 			brokerAddress = response.getContent().split(":")[0];
 			brokerPort = Integer.parseInt(response.getContent().split(":")[1]);
-			subscriber = new Client(brokerAddress, brokerPort);
+			subscriber = new Client(brokerAddress, brokerPort, null);
 			subscriber.sendReceive(msgBroker);
 		}
 	}
 	
-	public void publish(String message, String brokerAddress, int brokerPort){
+	public void publish(String message, String brokerAddress, int brokerPort, BrokerStatusListener brokerStatusListener){
 		Message msgPub = new MessageImpl();
 		msgPub.setBrokerId(brokerPort);
 		msgPub.setType("pub");
 		msgPub.setContent(message);
 		
-		Client publisher = new Client(brokerAddress, brokerPort);
+		Client publisher = new Client(brokerAddress, brokerPort, brokerStatusListener);
 		Message response = publisher.sendReceive(msgPub);
 		
 		if(response.getType().equals("backup")){			
 			brokerAddress = response.getContent().split(":")[0];
 			brokerPort = Integer.parseInt(response.getContent().split(":")[1]);
-			publisher = new Client(brokerAddress, brokerPort);
+			publisher = new Client(brokerAddress, brokerPort, brokerStatusListener);
 			publisher.sendReceive(msgPub);
 		}
 		
@@ -143,7 +144,7 @@ public class PubSubClient {
 				System.out.print("Enter the broker port (ex.8080): ");
 				brokerPort = reader.nextInt();
 				
-				publish(message, brokerAddress, brokerPort);
+				publish(message, brokerAddress, brokerPort, null);
 				
 				List<Message> log = observer.getLogMessages();
 				

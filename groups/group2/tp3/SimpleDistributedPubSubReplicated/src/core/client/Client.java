@@ -12,12 +12,14 @@ public class Client {
 	
 	private Socket s;
 	
-	public Client(String ip, int port){
+	public Client(String ip, int port, BrokerStatusListener brokerStatusListener){
 		try{
 			s = new Socket(ip, port);
 		}catch (Exception e){
 			System.out.println("Client cannot connect with " + ip + " on port: " + port);
-			
+
+			if (brokerStatusListener != null)
+				brokerStatusListener.onBrokerDown();
 		}
 	}
 	
