@@ -20,21 +20,23 @@ public class PubCommand implements PubSubCommand{
 		
 		response.setLogId(logId);
 		m.setLogId(logId);
-		
-		try{
-			//sincronizar com o broker backup
-			Message syncPubMsg = new MessageImpl();
-			syncPubMsg.setBrokerId(m.getBrokerId());
-			syncPubMsg.setContent(m.getContent());
-			syncPubMsg.setLogId(m.getLogId());
-			syncPubMsg.setType("syncPub");
-			
-			Client clientBackup = new Client(sencondaryServerAddress, secondaryServerPort, null);
-			syncPubMsg = clientBackup.sendReceive(syncPubMsg);
-			System.out.println(syncPubMsg.getContent());
-			
-		}catch (Exception e){
-			System.out.println("Cannot sync with backup - publish service");
+
+		if (secondaryServerPort != -1 && sencondaryServerAddress != null) {
+			try {
+				//sincronizar com o broker backup
+				Message syncPubMsg = new MessageImpl();
+				syncPubMsg.setBrokerId(m.getBrokerId());
+				syncPubMsg.setContent(m.getContent());
+				syncPubMsg.setLogId(m.getLogId());
+				syncPubMsg.setType("syncPub");
+
+				Client clientBackup = new Client(sencondaryServerAddress, secondaryServerPort, null);
+				syncPubMsg = clientBackup.sendReceive(syncPubMsg);
+				System.out.println(syncPubMsg.getContent());
+
+			} catch (Exception e) {
+				System.out.println("Cannot sync with backup - publish service");
+			}
 		}
 		
 		log.add(m);
