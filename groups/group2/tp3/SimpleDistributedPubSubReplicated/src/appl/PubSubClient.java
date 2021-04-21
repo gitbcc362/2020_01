@@ -24,6 +24,8 @@ public class PubSubClient {
 	private String backUpAddress = null;
 	private int backUpPort = 0;
 
+	private boolean isPrimary = true;
+
 	public PubSubClient(){
 		//this constructor must be called only when the method
 		//startConsole is used
@@ -39,7 +41,7 @@ public class PubSubClient {
 	}
 	
 	public void subscribe(String brokerAddress, int brokerPort){
-		if (this.backUpAddress != null && this.backUpPort != 0) {
+		if (!isPrimary) {
 			this.brokerAddress = this.backUpAddress;
 			this.brokerPort = this.backUpPort;
 		} else {
@@ -58,6 +60,19 @@ public class PubSubClient {
 			brokerPort = Integer.parseInt(response.getContent().split(":")[1]);
 			subscriber = new Client(brokerAddress, brokerPort, null);
 			subscriber.sendReceive(msgBroker);
+		}
+
+		Client subscriberBackup = new Client(brokerAddress, brokerPort, null);
+		Message msgBrokerBackup = new MessageImpl();
+		msgBrokerBackup.setBrokerId(brokerPort);
+		msgBrokerBackup.setType("giveMeSec");
+		msgBrokerBackup.setContent(clientAddress+":"+clientPort);
+		Message responseInfos = subscriberBackup.sendReceive(msgBrokerBackup);
+
+		if (responseInfos != null) {
+			this.backUpPort = responseInfos.getBrokerId();
+			this.backUpAddress = responseInfos.getContent();
+			System.out.println("backUpAddress: " + backUpAddress);
 		}
 	}
 	
@@ -78,7 +93,7 @@ public class PubSubClient {
 	}
 	
 	public void publish(String message, String type, String brokerAddress, int brokerPort){
-		if (this.backUpPort != 0 && this.backUpAddress != null) {
+		if (!isPrimary) {
 			brokerAddress = this.backUpAddress;
 			brokerPort = this.brokerPort;
 		}
@@ -92,8 +107,7 @@ public class PubSubClient {
 		msgPub.setContent(message);
 		
 		Client publisher = new Client(brokerAddress, brokerPort, () -> {
-			this.backUpAddress = "localhost";
-			this.backUpPort = 8081;
+			this.isPrimary = false;
 
 			subscribe(backUpAddress, backUpPort);
 
