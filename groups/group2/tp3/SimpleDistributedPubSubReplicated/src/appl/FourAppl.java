@@ -24,12 +24,12 @@ public class FourAppl implements BrokerStatusListener {
 	}
 	
 	public FourAppl(boolean flag){
-		gabriel = new PubSubClient("localhost", 8084);
+		gabriel = new PubSubClient("0.0.0.0", 8084);
 //		PubSubClient debora = new PubSubClient("localhost", 8083);
 //		PubSubClient jonata = new PubSubClient("localhost", 8084);
 		
-		gabriel.subscribe("localhost", 8080);
-		Thread accessOne = new ThreadWrapper(gabriel, "gabriel_acquire_x1", "localhost", brokerPort);
+		gabriel.subscribe("0.0.0.0", 8080);
+		Thread accessOne = new ThreadWrapper(gabriel, "gabriel_acquire_x1", "0.0.0.0", brokerPort);
 		
 //		debora.subscribe("localhost", 8080);
 //		jonata.subscribe("localhost", 8080);
@@ -240,7 +240,7 @@ public class FourAppl implements BrokerStatusListener {
 		ActionListener ac = event -> {
 			System.out.println("Finished ".concat("gabriel").concat(" ").concat(var));
 
-			Thread a = new ThreadWrapper(client, "gabriel".concat("_release_").concat(var), "localhost", 8080);
+			Thread a = new ThreadWrapper(client, "gabriel".concat("_release_").concat(var), "0.0.0.0", 8080);
 			a.start();
 			try{
 				a.join();
@@ -249,7 +249,7 @@ public class FourAppl implements BrokerStatusListener {
 			}
 			timer.stop();
 
-			Thread accessOne = new ThreadWrapper(client, "gabriel_acquire_x1", "localhost", 8080);
+			Thread accessOne = new ThreadWrapper(client, "gabriel_acquire_x1", "0.0.0.0", 8080);
 			accessOne.start();
 			try {
 				accessOne.join();
@@ -269,7 +269,7 @@ public class FourAppl implements BrokerStatusListener {
 	public void onBrokerDown() {
 		// broker backup need to be primary
 		this.brokerPort = 8080;
-		Thread accessOne = new ThreadWrapper(gabriel, "access gabriel- var X", "localhost", brokerPort);
+		Thread accessOne = new ThreadWrapper(gabriel, "access gabriel- var X", "0.0.0.0", brokerPort);
 		accessOne.start();
 		try {
 			accessOne.join();
