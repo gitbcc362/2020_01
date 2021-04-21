@@ -93,16 +93,23 @@ public class PubSubClient {
 		Client publisher = new Client(brokerAddress, brokerPort, () -> {
 			this.backUpAddress = "localhost";
 			this.backUpPort = 8081;
+
+			subscribe(backUpAddress, backUpPort);
+
 			Client publisher2 = new Client(backUpAddress, backUpPort, null);
 			Message msgPubAux = new MessageImpl();
 			msgPubAux.setBrokerId(backUpPort);
-			if (type != null)
-				msgPubAux.setType(type);
-			else
-				msgPubAux.setType("updatePrimary");
+			msgPubAux.setType("updatePrimary");
 			msgPubAux.setContent(message);
 
 			Message response = publisher2.sendReceive(msgPubAux);
+
+			if(response != null && response.getType().equals("backup")){
+				this.brokerAddress = response.getContent().split(":")[0];
+				this.brokerPort = Integer.parseInt(response.getContent().split(":")[1]);
+				publisher2 = new Client(this.brokerAddress, this.brokerPort, null);
+				publisher2.sendReceive(msgPub);
+			}
 		});
 		Message response = publisher.sendReceive(msgPub);
 		
