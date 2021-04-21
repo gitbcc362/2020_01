@@ -82,6 +82,7 @@ public class PubSubClient {
 			brokerAddress = this.backUpAddress;
 			brokerPort = this.brokerPort;
 		}
+
 		Message msgPub = new MessageImpl();
 		msgPub.setBrokerId(brokerPort);
 		if (type != null)
@@ -111,6 +112,7 @@ public class PubSubClient {
 				publisher2.sendReceive(msgPub);
 			}
 		});
+
 		Message response = publisher.sendReceive(msgPub);
 		
 		if(response != null && response.getType().equals("backup")){
