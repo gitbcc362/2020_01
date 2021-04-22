@@ -14,3 +14,7 @@
 #### 2) PubSub
 
     Exibe o projeto desenvolvido durante a disciplina cujo objetivo foi implementar um sistema distribuído baseado em Publish-Subscribe com sincronização, replicação e tolerância a falha.
+
+#### 3) Artefatos
+    
+    Contém outros artefatos gerados ao longo da disciplina (e.g. Slides de apresentação)
