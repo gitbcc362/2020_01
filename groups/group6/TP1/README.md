@@ -2,7 +2,7 @@
 
 ## Redis
 
-<p align="center">
+<p align="left">
     <img src="../.github/redisLogo.png" width="300px">
 </p>
 
@@ -12,7 +12,7 @@ O redis é um middleware que se destaca por permitir stream de dados podendo usa
 
 ### Quem está usando?
 
-<p align="center">
+<p align="left">
     <img src="../.github/redisPlayers.png" width="450px">
 </p>
 
@@ -20,7 +20,7 @@ O redis é um middleware que se destaca por permitir stream de dados podendo usa
 
 Além disso, ele usa um dataset em memória principal simulando as lógicas de gerenciamento de cache por motivos de performance. Por isso, todas as operações são feitas após os dados em questão estarem na memória principal do database e assim obter o “cache hit”.
 
-<p align="center">
+<p align="left">
     <img src="../.github/distributedCaching.gif" width="450px">
 </p>
 
@@ -28,7 +28,7 @@ Além disso, ele usa um dataset em memória principal simulando as lógicas de g
 
 O Redis possui um componente de publisher-subscriber, onde não é necessário programar para quem o dado será enviado, apenas é especificado um canal, no qual um ou mais subscribers podem se inscrever e receber os dados via broadcast, que por sua vez foram publicados pelo publisher no canal em questão
 
-<p align="center">
+<p align="left">
     <img src="../.github/redisPubSub.gif" width="600px">
 </p>
 
@@ -40,7 +40,7 @@ O Redis possui um componente de publisher-subscriber, onde não é necessário p
 1. Publisher 2 publica a mensagem “def” no canal Y e os Subscribers 2 e 3 recebem ela, pois estão escutando Y
 
 
-<p align="center">
+<p align="left">
     <img src="../.github/exampleTP1.png" width="600px">
 </p>
 
@@ -52,7 +52,7 @@ O Redis possui um componente de publisher-subscriber, onde não é necessário p
 
 A aplicação feita é feita em nodejs e busca contar a ocorrência de todas as palavras da bíblia utilizando conceitos de paralelismo (pipeline) utilizando Sistemas Distribuídos via Redis pub/sub e Docker Swarm.
 
-<p align="center">
+<p align="left">
     <img src="../.github/technologiesTP1.png" width="450px">
 </p>
 
@@ -62,13 +62,13 @@ Apesar de relativamente simples, é possível aplicar diversas camadas de parale
 
 Uma vez esquematizado o pipeline, fica fácil enxergar o paralelismo na aplicação. A ideia é usar o Redis pub/sub como intermédio entre esses pipes, onde serão tratados como micro-serviços dentro de cada máquina.
 
-<p align="center">
+<p align="left">
     <img src="../.github/app1TP1.png" width="600px">
 </p>
 
 Vários pipelines podem ser executados simultaneamente utilizando indexação roundRobin. Isso permite que haja paralelismo entre os passos, uma vez que são assíncronos. 
 
-<p align="center">
+<p align="left">
     <img src="../.github/app2TP1.png" width="400px">
 </p>
 
@@ -76,12 +76,12 @@ Vários pipelines podem ser executados simultaneamente utilizando indexação ro
 
 A princípio, devido ao pub/sub e sua natureza de broadcasting, a escalabilidade para aplicações de pipeline acaba sendo prejudicada devido ao fato de haver processamento de dados repetido, caso mais de uma máquina esteja acessando o canal.
 
-<p align="center">
+<p align="left">
     <img src="../.github/app3TP1.png" width="250px">
 </p>
 
 Uma possível solução que pensamos para permitir mais de uma máquina por pipe, é indexar um canal para cada máquina no próximo step, passando a responsabilidade do gerenciamento de envio para o producer, e cabe a ele garantir que não serão publicados dados repetidos para máquinas diferentes.
 
-<p align="center">
+<p align="left">
     <img src="../.github/app4TP1.png" width="250px">
 </p>
