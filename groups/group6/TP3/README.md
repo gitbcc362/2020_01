@@ -149,7 +149,7 @@ npm install
 | --------- | --------- |
 | brokerName | o nome identificador do broker |
 | port |  a porta do broker |
-| mainHost o host do broker principal a ser conectado  |
+| mainHost | o host do broker principal a ser conectado  |
 | mainPort | a porta do broker principal a ser conectado  |
 
 Linux
