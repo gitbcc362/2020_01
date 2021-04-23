@@ -2,9 +2,7 @@
 ## Protocolos
 ### Protocolo de gerenciamento de mensagens:
 
-Se baseia em filas para o tratamento de concorrência dos recursos. Cada recurso possui uma fila de prioridade indicando qual o próximo cliente
-a recebê-lo baseado na ordem de requisições. Cabe ao servidor realizar o controle de qual recurso está sendo utilizado no momento e liberá-lo para outro
-cliente se e somente se ele não estiver sendo utilizado no momento.
+Se baseia em filas para o tratamento de concorrência dos recursos. Cada recurso possui uma fila de prioridade indicando qual o próximo cliente a recebê-lo baseado na ordem de requisições. Cabe ao servidor realizar o controle de qual recurso está sendo utilizado no momento e liberá-lo para outro cliente se e somente se ele não estiver sendo utilizado no momento.
 
 ```json
 { 
@@ -24,29 +22,14 @@ cliente se e somente se ele não estiver sendo utilizado no momento.
 
 ### Protocolo de backup de servidores:
 
-O protocolo de backup serve para garantir uma maior resiliência das conexões, onde se um servidor cair ou parar de funcionar, as chances de ter outro para
-cobrir suas funcionalidades serão grandes.
-O sistema funciona da seguinte forma: Em um conjunto de servidores com n brokers, todos estarão referenciados em uma lista encadeada. A atualização de backup
-será feita percorrendo tal lista encadeada, onde o broker 1 atualiza o broker 2, o broker 2 atualiza o broker 3 e assim por diante, sabendo que o broker de
-menor índice sempre será o mais atualizado durante esse processo. Essa atualização ocorre periodicamente no sistema.
+O protocolo de backup serve para garantir uma maior resiliência das conexões, onde se um servidor cair ou parar de funcionar, as chances de ter outro para cobrir suas funcionalidades serão grandes.
 
-Considere o seguinte sistema de brokers:
-
-<p align="left">
-    <img src="../.github/brokerLinkedList.png" width="600px">
-</p>
-
-Tem-se N brokers. Segundo as propriedades decididas pelo protocolo, o primeiro da lista sempre será o principal, ou seja, aquele que se comunica com os clientes.
-Periodicamente haverá backups, portanto, o broker B1 irá atualizar B2, B2 irá atualizar B3 ... até Bn.
-Em cada cliente haverá uma lista indicando os dados para conexão de cada broker na mesma ordem mostrada acima. Então, caso o broker principal B1 caia, 
-um timeout irá acontecer e os clientes automaticamente tentarão se conectar a B2, caso a conexão de B2 não seja bem-sucedida, o cliente tenta B3, e assim por
-diante até Bn
+O sistema funciona da seguinte forma: O broker principal atualiza todos os outros brokers a cada vez que o recurso for acessado por um client.
 
 ## Mensagens
 
 - ### MESSAGETYPE.ACQUIRE:
-	Requisição do recurso feita pelo cliente para o servidor. O cliente requisita um recurso específico e espera um MESSAGETYPE.ACQUIRERESPONSE como
-	retorno do servidor.
+	Requisição do recurso feita pelo cliente para o servidor. O cliente requisita um recurso específico e espera um MESSAGETYPE.ACQUIRERESPONSE como retorno do servidor.
 
     ```json
     { 
@@ -63,8 +46,7 @@ diante até Bn
 	> Resposta: MESSAGETYPE.ACQUIRERESPONSE
 	
 - ### MESSAGETYPE.ACQUIRERESPONSE:
-	Resposta para a requisição do recurso feita pelo servidor para o cliente. O servidor responde para o cliente se o recurso está disponível para
-	ser utilizado ou não, seguido do recurso em si caso esteja disponível
+	Resposta para a requisição do recurso feita pelo servidor para o cliente. O servidor responde para o cliente se o recurso está disponível para ser utilizado ou não, seguido do recurso em si caso esteja disponível
 
     ```json
     { 
@@ -98,8 +80,7 @@ diante até Bn
 	> Resposta: -
 
 - ### MESSAGETYPE.RELEASE:
-	Resposta do cliente para o servidor em relação ao processamento do recurso recebido anteriormente. É feita após o recurso em questão ser processado
-	e/ou alterado pelo cliente, então é enviado um sinal de release para o servidor para que assim libere o recurso para outros clientes.
+	Resposta do cliente para o servidor em relação ao processamento do recurso recebido anteriormente. É feita após o recurso em questão ser processado e/ou alterado pelo cliente, então é enviado um sinal de release para o servidor para que assim libere o recurso para outros clientes.
 
     ```json
     { 
@@ -118,8 +99,7 @@ diante até Bn
 	> Resposta: MESSAGETYPE.ACK
 
 - ### MESSAGETYPE.INFOCLIENT:
-	Resposta do cliente para o servidor informando dados para seu armazenamento na lista de sockets do servidor. É a primeira mensagem enviada após a
-	conexão.
+	Resposta do cliente para o servidor informando dados para seu armazenamento na lista de sockets do servidor. É a primeira mensagem enviada após a conexão.
 
     ```json
     { 
@@ -134,8 +114,57 @@ diante até Bn
 	> Resposta: MESSAGETYPE.UPDATEBROKER
 
 - ### MESSAGETYPE.INFOBROKER:
+	Resposta do broker secundário para o servidor informando dados para seu armazenamento na lista de sockets do servidor. É a primeira mensagem enviada após a conexão.
+
+    ```json
+    { 
+        "socketName": "broker2", 
+        "host": "localhost", 
+        "port": "8080",
+    }
+    ```
+	
+    | chave | tipo | descrição |
+    | ----- | ---- | --------- |
+    | socketName | string | nome do cliente para ser armazenado na lista de sockets do servidor |
+    | host | string | o host do broker |
+    | port | string | a porta do broker |
+
+	> Resposta: MESSAGETYPE.UPDATEBROKER
 
 - ### MESSAGETYPE.UPDATEBROKER:
+    Atualiza a lista de brokers
+
+    ```json
+    { 
+        "arrayBroker": ["broker2"], 
+    }
+    ```
+	
+    | chave | tipo | descrição |
+    | ----- | ---- | --------- |
+    | arrayBroker | array | lista de brokers |
+
+	> Resposta: MESSAGETYPE.ACK
+- ### MESSAGETYPE.UPDATESOURCE:
+    Atualiza um recurso
+    
+    ```json
+    { 
+        "singleSource": {
+            "resourcePosition": 5,
+            "resource": {
+                "content": "b"
+            }
+        }, 
+    }
+    ```
+	
+    | chave | tipo | descrição |
+    | ----- | ---- | --------- |
+    | singleSource | object | recurso a ser atualizado |
+
+	> Resposta: MESSAGETYPE.ACK
 
 ## Execução
 
@@ -148,18 +177,19 @@ npm install
 | argumento | descrição |
 | --------- | --------- |
 | brokerName | o nome identificador do broker |
-| port |  a porta do broker |
-| mainHost | o host do broker principal a ser conectado  |
+| brokerHost |  o host do broker |
+| brokerPort |  a porta do broker |
+| mainHost | o brokerHost do broker principal a ser conectado  |
 | mainPort | a porta do broker principal a ser conectado  |
 
 Linux
 ```sh
-npm debug-server brokerName port mainHost mainPort  
+npm run debug-server brokerName brokerHost brokerPort mainHost mainPort  
 ```
 
 Windows
 ```sh
-npm windows-debug-server brokerName port mainHost mainPort 
+npm run windows-debug-server brokerName brokerHost brokerPort mainHost mainPort 
 ```
 
 > O primeiro broker deve ser o primário e para isso é necessário executar o comando demonstrado acima omitindo os argumentos mainHost e mainPort. Esses argumentos só devem ser passado caso o broker seja secundário e já exista um broker primário.
@@ -174,11 +204,11 @@ npm windows-debug-server brokerName port mainHost mainPort
 
 Linux
 ```sh
-npm debug-client clientName brokerHost brokerPort
+npm run debug-client clientName brokerHost brokerPort
 ```
 
 Windows
 ```sh
-npm windows-debug-client clientName brokerHost brokerPort
+npm run windows-debug-client clientName brokerHost brokerPort
 ```
    
