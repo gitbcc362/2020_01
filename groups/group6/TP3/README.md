@@ -36,7 +36,7 @@ Considere o seguinte sistema de brokers:
     <img src="../.github/brokerLinkedList.png" width="600px">
 </p>
 
-Tem-se 5 brokers. Segundo as propriedades decididas pelo protocolo, o primeiro da lista sempre será o principal, ou seja, aquele que se comunica com os clientes.
+Tem-se N brokers. Segundo as propriedades decididas pelo protocolo, o primeiro da lista sempre será o principal, ou seja, aquele que se comunica com os clientes.
 Periodicamente haverá backups, portanto, o broker B1 irá atualizar B2, B2 irá atualizar B3 ... até Bn.
 Em cada cliente haverá uma lista indicando os dados para conexão de cada broker na mesma ordem mostrada acima. Então, caso o broker principal B1 caia, 
 um timeout irá acontecer e os clientes automaticamente tentarão se conectar a B2, caso a conexão de B2 não seja bem-sucedida, o cliente tenta B3, e assim por
@@ -87,7 +87,7 @@ diante até Bn
 
     ```json
     { 
-        "statusCode": "", 
+        "statusCode": "ok", 
     }
     ```
 
@@ -147,10 +147,10 @@ npm install
 
 | argumento | descrição |
 | --------- | --------- |
-| brokerName | bool |
-| port | string |
-| mainHost | array |
-| mainPort | array |
+| brokerName | o nome identificador do broker |
+| port |  a porta do broker |
+| mainHost o host do broker principal a ser conectado  |
+| mainPort | a porta do broker principal a ser conectado  |
 
 Linux
 ```sh
@@ -168,9 +168,9 @@ npm windows-debug-server brokerName port mainHost mainPort
 
 | argumento | descrição |
 | --------- | --------- |
-| clientName | bool |
-| brokerHost | string |
-| brokerPort | array |
+| clientName | o nome identificador do cliente |
+| brokerHost | o host do broker a ser conectado |
+| brokerPort | a porta do broker a ser conectado |
 
 Linux
 ```sh
