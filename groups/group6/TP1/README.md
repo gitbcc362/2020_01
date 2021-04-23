@@ -77,11 +77,11 @@ Vários pipelines podem ser executados simultaneamente utilizando indexação ro
 A princípio, devido ao pub/sub e sua natureza de broadcasting, a escalabilidade para aplicações de pipeline acaba sendo prejudicada devido ao fato de haver processamento de dados repetido, caso mais de uma máquina esteja acessando o canal.
 
 <p align="left">
-    <img src="../.github/app3TP1.png" width="250px">
+    <img src="../.github/app3TP1.png" width="350px">
 </p>
 
 Uma possível solução que pensamos para permitir mais de uma máquina por pipe, é indexar um canal para cada máquina no próximo step, passando a responsabilidade do gerenciamento de envio para o producer, e cabe a ele garantir que não serão publicados dados repetidos para máquinas diferentes.
 
 <p align="left">
-    <img src="../.github/app4TP1.png" width="250px">
+    <img src="../.github/app4TP1.png" width="350px">
 </p>
