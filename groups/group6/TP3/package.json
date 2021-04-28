@@ -1,0 +1,42 @@
+{
+  "name": "tp3-resilience",
+  "version": "0.0.1",
+  "description": "Simple broker and client with connection fault tolerance",
+  "main": "index.js",
+  "scripts": {
+    "lint": "prettier --write . && eslint --fix .",
+    "debug": "DEBUG=* node test.js",
+    "debug-server": "DEBUG=* node broker.js",
+    "debug-client": "DEBUG=* node client.js",
+    "windows-debug-server": "@powershell -Command $env:DEBUG='*';node broker.js",
+    "windows-debug-client": "@powershell -Command $env:DEBUG='*';node client.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/joaoderocha/TP3-resilience.git"
+  },
+  "keywords": [
+    "distributed-system",
+    "fault",
+    "tolerance",
+    "client-server"
+  ],
+  "author": "Joao H. Araujo Rocha, Gustavo Faria Amorim, Andre Schneider Montresor",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/joaoderocha/TP3-resilience/issues"
+  },
+  "homepage": "https://github.com/joaoderocha/TP3-resilience#readme",
+  "devDependencies": {
+    "eslint": "^7.20.0",
+    "debug": "4.3.1",
+    "prettier": "^2.2.1",
+    "eslint-config-standard": "^16.0.2",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^4.3.1",
+    "eslint-plugin-security": "^1.4.0",
+    "eslint-plugin-unicorn": "^28.0.2"
+  }
+}
