@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="SimpleDistributedPubSubReplicated:jar">
+    <output-path>$PROJECT_DIR$/classes/artifacts/SimpleDistributedPubSubReplicated_jar</output-path>
+    <root id="archive" name="SimpleDistributedPubSubReplicated.jar">
+      <element id="module-output" name="SimpleDistributedPubSubReplicated" />
+    </root>
+  </artifact>
+</component>
