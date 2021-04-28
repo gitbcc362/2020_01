@@ -1,0 +1,47 @@
+version: "3.7"
+
+services:
+  mongo-rs0-1:
+    image: "mongo-start"
+    build: ./database/mongo-rs0-1
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./database/mongo-rs0-1/data:/data/db
+    depends_on:
+      - "mongo-rs0-2"
+      - "mongo-rs0-3"
+
+  mongo-rs0-2:
+    image: "mongo:3.6.0"
+    command: --replSet rs0 --smallfiles --oplogSize 128
+    ports:
+      - "27018:27017"
+    volumes:
+      - ./database/mongo-rs0-2/data:/data/db
+
+  mongo-rs0-3:
+    image: "mongo:3.6.0"
+    command: --replSet rs0 --smallfiles --oplogSize 128
+    ports:
+      - "27019:27017"
+    volumes:
+      - ./database/mongo-rs0-3/data:/data/db
+
+  setup-rs:
+    image: "setup-rs"
+    build: ./database/setup
+    depends_on:
+      - "mongo-rs0-1"
+
+  api:
+    container_name: api-auth
+    build: .
+    command: bash -c "yarn install; yarn dev"
+    volumes:
+    - .:/usr/src/api
+    ports:
+      - 3333:3333
+    restart: always
+    depends_on:
+      - "setup-rs"
