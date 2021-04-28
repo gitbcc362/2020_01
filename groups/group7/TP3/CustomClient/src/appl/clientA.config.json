@@ -1,0 +1,18 @@
+{
+    "name": "Client A",
+    "ip": "localhost",
+    "port": 8084,
+    "numberOfRequests": 8,
+    "maxSleepTime": 7,
+    "brokers": [{
+        "name": "Broker 1",
+        "ip": "localhost",
+        "port": 8080,
+        "lostConnection": false
+    },{
+        "name": "Broker 2",
+        "ip": "localhost",
+        "port": 8081,
+        "lostConnection": false
+    }]
+}
